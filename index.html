@@ -1,0 +1,58 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kiểm tra bảo mật</title>
+  <script src="https://hcaptcha.com/1/api.js" async defer></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: linear-gradient(to bottom right, #7f7fd5, #86a8e7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: white;
+      margin: 0;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 32px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .container img {
+      margin-bottom: 16px;
+    }
+    .container h2 {
+      margin-bottom: 8px;
+    }
+    .captcha-box {
+      margin: 24px 0;
+    }
+    .note {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="Shield" width="60">
+    <h2>Vui lòng chờ khi chúng tôi đang kiểm tra bạn...</h2>
+    <p>Đây là một quy trình bảo mật tự động</p>
+
+    <div class="captcha-box">
+      <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-000000000001"></div>
+    </div>
+
+    <p class="note">🔒 Chúng tôi cần xác minh rằng bạn là con người thật để bảo vệ website khỏi bot và spam.</p>
+  </div>
+</body>
+</html>
