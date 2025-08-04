@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -49,10 +48,20 @@
     <p>Đây là một quy trình bảo mật tự động</p>
 
     <div class="captcha-box">
-      <div class="h-captcha" data-sitekey="0cc2b7e0-cb58-4be8-870e-fba660b4d4e2"></div>
+      <div class="h-captcha" 
+           data-sitekey="0cc2b7e0-cb58-4be8-870e-fba660b4d4e2" 
+           data-callback="onCaptchaSuccess">
+      </div>
     </div>
 
     <p class="note">🔒 Chúng tôi cần xác minh rằng bạn là con người thật để bảo vệ website khỏi bot và spam.</p>
   </div>
+
+  <script>
+    function onCaptchaSuccess(token) {
+      // Người dùng đã hoàn thành captcha, chuyển sang trang khác
+      window.location.href = "home.html";
+    }
+  </script>
 </body>
 </html>
