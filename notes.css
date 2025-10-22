@@ -1,0 +1,179 @@
+/* /static/css/notes.css */
+
+/* Kế thừa kiểu terminal từ base.css nếu có, hoặc định nghĩa lại */
+.ubuntu-terminal {
+    background-color: var(--color-terminal-bg, #2d2d2d);
+    color: var(--color-terminal-text, #f0f0f0);
+    font-family: "Ubuntu Mono", "Courier New", monospace;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin: 2rem auto;
+    overflow: hidden;
+}
+
+.terminal-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-terminal-header, #e0e0e0);
+    color: var(--color-terminal-title-text, #444);
+}
+
+.terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.terminal-dot.red { background-color: var(--color-red-dot, #ff5f57); }
+.terminal-dot.yellow { background-color: var(--color-yellow-dot, #fdbc2e); }
+.terminal-dot.green { background-color: var(--color-green-dot, #28c940); }
+
+.terminal-title {
+    flex-grow: 1;
+    text-align: center;
+    font-weight: 500;
+    padding-right: 48px;
+}
+
+.terminal-title i {
+    margin-right: 0.5rem;
+}
+
+/* --- Kiểu dáng ứng dụng ghi chú --- */
+.notes-container {
+    padding: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.note-editor {
+    flex: 1;
+    min-width: 300px;
+}
+
+.notes-list-container {
+    flex: 1;
+    min-width: 300px;
+}
+
+.notes-list-container h3 {
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--color-terminal-header);
+    padding-bottom: 0.5rem;
+}
+
+.note-editor .form-group {
+    margin-bottom: 1rem;
+}
+
+.note-editor label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--color-terminal-text);
+}
+
+.note-editor input[type="text"],
+.note-editor textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+}
+
+.note-editor textarea {
+    resize: vertical; /* Cho phép thay đổi kích thước theo chiều dọc */
+}
+
+.btn-save-note {
+    background-color: var(--color-primary);
+    color: var(--color-primary-text);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    width: 100%;
+}
+
+.btn-save-note:hover {
+    opacity: 0.9;
+}
+
+/* --- Danh sách ghi chú --- */
+#notes-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px; /* Thêm khoảng đệm cho thanh cuộn */
+}
+
+.note-item {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    position: relative;
+    word-wrap: break-word; /* Đảm bảo xuống dòng nếu chữ quá dài */
+}
+
+.note-item h4 {
+    margin-bottom: 0.5rem;
+}
+
+.note-item p {
+    font-size: 0.95rem;
+    white-space: pre-wrap; /* Giữ nguyên định dạng xuống dòng của textarea */
+    margin-bottom: 1rem;
+}
+
+.note-item-date {
+    font-size: 0.8rem;
+    color: var(--color-icon);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.note-item-delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--color-icon);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.note-item-delete:hover {
+    color: var(--color-red-dot);
+}
+
+/* CSS cho thanh cuộn */
+#notes-list::-webkit-scrollbar {
+    width: 8px;
+}
+#notes-list::-webkit-scrollbar-track {
+    background: var(--color-terminal-bg);
+}
+#notes-list::-webkit-scrollbar-thumb {
+    background-color: var(--color-terminal-header);
+    border-radius: 4px;
+}
+
+/* Đánh dấu link sidebar đang active */
+.nav-item.active {
+    background-color: var(--color-nav-item-hover);
+    font-weight: bold;
+}
