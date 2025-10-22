@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hanami Notes - Ghi chú</title>
+  <link rel="icon" href="/static/images/favicon.png">
+  <style>
+    :root{
+      --bg:#f5f7fb; --card:#fff; --muted:#6b7280; --accent:#6c5ce7; --danger:#ff6b6b; --glass: rgba(255,255,255,0.6);
+    }
+    [data-theme="dark"]{ --bg:#0b1020; --card:#0f1724; --muted:#9aa4b2; --accent:#7c5cff; --danger:#ff7b7b; --glass: rgba(255,255,255,0.03); color:#e6eef8 }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,var(--bg),#e9eef8);}
+    .app{display:flex;height:100vh;align-items:stretch}
+    /* sidebar */
+    .sidebar{width:260px;background:var(--card);box-shadow:0 4px 18px rgba(2,6,23,0.08);padding:20px;box-sizing:border-box}
+    [data-theme="dark"] .sidebar{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    .brand img{width:36px;height:36px;border-radius:6px}
+    .brand h1{font-size:16px;margin:0}
+    .sidebar .controls{margin-top:12px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;background:var(--accent);color:white}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,0,0,0.06)}
+    .search{margin:12px 0}
+    .search input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);box-sizing:border-box}
+    .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .tag{background:var(--glass);padding:6px 8px;border-radius:999px;font-size:13px;color:var(--muted);cursor:pointer}
+    .main{flex:1;padding:24px;display:flex;flex-direction:column;gap:18px}
+    .topbar{display:flex;justify-content:space-between;align-items:center}
+    .grid{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+    .notes-list{background:var(--card);padding:12px;border-radius:12px;height:70vh;overflow:auto}
+    .note-card{padding:10px;border-radius:8px;margin-bottom:8px;cursor:pointer;border:1px solid transparent}
+    .note-card:hover{border-color:rgba(0,0,0,0.06)}
+    .note-title{font-weight:600}
+    .note-meta{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
+    .editor{background:var(--card);padding:12px;border-radius:12px;height:70vh;display:flex;flex-direction:column}
+    .editor .title-input{padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);margin-bottom:8px}
+    .editor textarea{flex:1;padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);resize:none}
+    .editor .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+    .small{font-size:13px;color:var(--muted)}
+    .tag-input{display:flex;gap:8px;align-items:center}
+    .tag-input input{padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    .import-file{display:none}
+    .star{color:gold}
+    footer.site-footer{padding:10px 24px;color:var(--muted);font-size:13px}
+    @media (max-width:900px){.sidebar{display:none}.grid{grid-template-columns:1fr}}    
+  </style>
+</head>
+<body>
+  <script>
+    (function(){const saved = localStorage.getItem('theme');const prefers = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;const t = saved || (prefers? 'dark':'light');document.documentElement.setAttribute('data-theme', t);})();
+  </script>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="/static/images/favicon.png" alt="logo">
+        <div>
+          <h1>Hanami Notes</h1>
+          <div class="small">Ghi chú nhanh - Lưu cục bộ</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="newNoteBtn" class="btn">+ Ghi chú mới</button>
+        <div style="height:10px"></div>
+        <button id="exportBtn" class="btn ghost">Xuất JSON</button>
+        <label class="btn ghost" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+          Nhập
+          <input id="importFile" class="import-file" type="file" accept="application/json">
+        </label>
+      </div>
+
+      <div class="search">
+        <input id="searchInput" placeholder="Tìm tiêu đề hoặc nội dung...">
+      </div>
+
+      <div class="tags" id="tagsContainer"></div>
+
+      <div style="margin-top:18px" class="small">Lưu theo TOKEN (nếu đăng nhập). Nếu không, ghi chú lưu cho thiết bị này.</div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <strong id="notesCount">0</strong> ghi chú
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="themeToggle" class="btn ghost">Chuyển theme</button>
+          <button id="clearAllBtn" class="btn ghost">Xóa tất cả</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="notes-list" id="notesList">
+          <!-- danh sách note -->
+        </div>
+
+        <div class="editor">
+          <input id="noteTitle" class="title-input" placeholder="Tiêu đề...">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <div class="tag-input" style="flex:1">
+              <input id="tagInput" placeholder="Thêm tag, nhấn Enter để thêm">
+            </div>
+            <label title="Đánh dấu yêu thích" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">
+              <input id="starCheckbox" type="checkbox"> Yêu thích
+            </label>
+          </div>
+
+          <textarea id="noteContent" placeholder="Viết ghi chú ở đây..."></textarea>
+
+          <div class="actions">
+            <button id="saveBtn" class="btn">Lưu</button>
+            <button id="deleteBtn" class="btn ghost">Xóa</button>
+            <button id="previewBtn" class="btn ghost">Xem trước</button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="site-footer">Hanami Notes • Lưu trên localStorage • ©2025</footer>
+    </main>
+  </div>
+
+  <script>
+    // --- Storage keys & helpers ---
+    const app = (()=>{
+      const LS_PREFIX = 'hanami_notes_v1:';
+      function getStorageKey(token){return LS_PREFIX + (token || 'anon');}
+
+      // basic id gen
+      function uid(){return 'n_'+Math.random().toString(36).slice(2,9);
+      }
+
+      function now(){return new Date().toISOString();}
+
+      function loadAll(token){
+        const raw = localStorage.getItem(getStorageKey(token));
+        if(!raw) return [];
+        try{return JSON.parse(raw);}catch(e){console.error(e);return []}
+      }
+      function saveAll(token,arr){localStorage.setItem(getStorageKey(token), JSON.stringify(arr));}
+
+      return {getStorageKey,uid,now,loadAll,saveAll};
+    })();
+
+    // --- App state ---
+    let state = {
+      token: null, // optional token from login modal of your main site
+      notes: [],
+      filtered: [],
+      currentId: null,
+      tags: new Set()
+    };
+
+    // --- Elements ---
+    const notesList = document.getElementById('notesList');
+    const noteTitle = document.getElementById('noteTitle');
+    const noteContent = document.getElementById('noteContent');
+    const saveBtn = document.getElementById('saveBtn');
+    const newNoteBtn = document.getElementById('newNoteBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const searchInput = document.getElementById('searchInput');
+    const tagInput = document.getElementById('tagInput');
+    const tagsContainer = document.getElementById('tagsContainer');
+    const notesCount = document.getElementById('notesCount');
+    const exportBtn = document.getElementById('exportBtn');
+    const importFile = document.getElementById('importFile');
+    const previewBtn = document.getElementById('previewBtn');
+    const starCheckbox = document.getElementById('starCheckbox');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const themeToggle = document.getElementById('themeToggle');
+
+    // --- Initialize ---
+    function init(){
+      // try pick up token from parent site if available
+      try{ if(window.app && window.app.getToken) state.token = window.app.getToken(); }catch(e){}
+      state.notes = app.loadAll(state.token);
+      state.filtered = state.notes.slice().sort(byUpdated);
+      rebuildTags();
+      renderNotesList();
+      bindEvents();
+    }
+
+    function byUpdated(a,b){return (new Date(b.updated||b.created)) - (new Date(a.updated||a.created));}
+
+    // --- Events ---
+    function bindEvents(){
+      newNoteBtn.addEventListener('click', ()=>{createNote();});
+      saveBtn.addEventListener('click', saveCurrent);
+      deleteBtn.addEventListener('click', deleteCurrent);
+      searchInput.addEventListener('input', onSearch);
+      tagInput.addEventListener('keydown', onTagKey);
+      exportBtn.addEventListener('click', exportNotes);
+      importFile.addEventListener('change', importFromFile);
+      previewBtn.addEventListener('click', preview);
+      clearAllBtn.addEventListener('click', clearAll);
+      themeToggle.addEventListener('click', toggleTheme);
+      notesList.addEventListener('click', onNotesClick);
+    }
+
+    // --- CRUD ---
+    function createNote(){
+      const n = {id:app.uid(), title:'Ghi chú mới', content:'', tags:[], favorite:false, created:app.now(), updated:app.now()};
+      state.notes.unshift(n);
+      state.filtered = state.notes.slice().sort(byUpdated);
+      state.currentId = n.id;
+      persist();
+      rebuildTags();
+      renderNotesList();
+      loadCurrent();
+      noteTitle.focus();
+    }
+
+    function saveCurrent(){
+      if(!state.currentId) return alert('Chưa chọn ghi chú');
+      const n = state.notes.find(x=>x.id===state.currentId);
+      if(!n) return;
+      n.title = noteTitle.value || 'Ghi chú';
+      n.content = noteContent.value;
+      n.updated = app.now();
+      n.tags = Array.from(state.tagsForCurrent || []);
+      n.favorite = starCheckbox.checked;
+      persist();
+      state.filtered = state.notes.slice().sort(byUpdated);
+      rebuildTags();
+      renderNotesList();
+      toast('Đã lưu');
+    }
+
+    function deleteCurrent(){
+      if(!state.currentId) return alert('Chưa chọn ghi chú');
+      if(!confirm('Xác nhận xóa ghi chú này?')) return;
+      state.notes = state.notes.filter(x=>x.id!==state.currentId);
+      state.currentId = null;
+      persist();
+      state.filtered = state.notes.slice().sort(byUpdated);
+      rebuildTags();
+      renderNotesList();
+      clearEditor();
+    }
+
+    function clearAll(){
+      if(!confirm('Xóa tất cả ghi chú cho tài khoản này?')) return;
+      state.notes = [];
+      state.currentId = null;
+      persist();
+      state.filtered = [];
+      renderNotesList();
+      clearEditor();
+    }
+
+    function persist(){ app.saveAll(state.token, state.notes); }
+
+    // --- Rendering ---
+    function renderNotesList(){
+      notesList.innerHTML = '';
+      const list = state.filtered;
+      notesCount.textContent = list.length;
+      if(list.length===0){ notesList.innerHTML = '<div class="small">Không có ghi chú. Nhấn "Ghi chú mới" để bắt đầu.</div>'; return }
+      for(const n of list){
+        const el = document.createElement('div'); el.className='note-card'; el.dataset.id = n.id;
+        el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><div class=\"note-title\">${escapeHtml(n.title||'Không có tiêu đề')}</div><div class=\"note-meta\">${(n.tags||[]).map(t=>'<span style=\"background:var(--glass);padding:2px 6px;border-radius:6px;font-size:12px;margin-right:6px\">'+escapeHtml(t)+'</span>').join('')}<span class=\"small\">${new Date(n.updated||n.created).toLocaleString()}</span></div></div><div style=\"text-align:right\">${n.favorite?'<span title="Yêu thích" class="star">★</span>':''}<div style=\"margin-top:6px\"><button data-act=\"dup\" data-id=\"${n.id}\" class=\"btn ghost\">Nhân bản</button></div></div></div>`;
+        notesList.appendChild(el);
+      }
+    }
+
+    function loadCurrent(){
+      const id = state.currentId;
+      if(!id){ clearEditor(); return }
+      const n = state.notes.find(x=>x.id===id);
+      if(!n) return clearEditor();
+      noteTitle.value = n.title||'';
+      noteContent.value = n.content||'';
+      starCheckbox.checked = !!n.favorite;
+      state.tagsForCurrent = new Set(n.tags||[]);
+      renderTagsForEditor();
+    }
+
+    function clearEditor(){ noteTitle.value=''; noteContent.value=''; starCheckbox.checked=false; state.tagsForCurrent=new Set(); renderTagsForEditor(); }
+
+    function onNotesClick(e){
+      const card = e.target.closest('.note-card');
+      if(!card) return;
+      const id = card.dataset.id;
+      const act = e.target.dataset.act;
+      if(act==='dup'){ duplicateNote(id); return }
+      state.currentId = id;
+      loadCurrent();
+    }
+
+    function duplicateNote(id){
+      const src = state.notes.find(x=>x.id===id); if(!src) return;
+      const n = {...src, id:app.uid(), created:app.now(), updated:app.now(), title:(src.title||'')+' (copy)'};
+      state.notes.unshift(n);
+      persist(); state.filtered = state.notes.slice().sort(byUpdated); renderNotesList();
+      toast('Đã nhân bản');
+    }
+
+    // --- Tags ---
+    function rebuildTags(){
+      const s = new Set();
+      state.notes.forEach(n=> (n.tags||[]).forEach(t=>s.add(t)));
+      state.tags = s;
+      renderGlobalTags();
+    }
+
+    function renderGlobalTags(){ tagsContainer.innerHTML=''; Array.from(state.tags).sort().forEach(t=>{ const el=document.createElement('div'); el.className='tag'; el.textContent=t; el.addEventListener('click', ()=>filterByTag(t)); tagsContainer.appendChild(el);} ); }
+
+    function filterByTag(tag){ searchInput.value = ''; state.filtered = state.notes.filter(n=> (n.tags||[]).includes(tag)).sort(byUpdated); renderNotesList(); }
+
+    function renderTagsForEditor(){ const container = document.getElementById('tagsEditor'); if(!container){ /* create */ }
+      // show tags in input area as small pills
+      // We'll display under the tagInput field
+      let el = document.getElementById('editorTagPills'); if(!el){ el=document.createElement('div'); el.id='editorTagPills'; el.style.marginTop='6px'; el.style.display='flex'; el.style.gap='6px'; document.querySelector('.tag-input').appendChild(el); }
+      el.innerHTML=''; Array.from(state.tagsForCurrent||[]).forEach(t=>{ const p=document.createElement('div'); p.className='tag'; p.textContent=t; p.addEventListener('click', ()=>{ state.tagsForCurrent.delete(t); renderTagsForEditor(); }); el.appendChild(p); });
+    }
+
+    function onTagKey(e){ if(e.key==='Enter'){ e.preventDefault(); const v = tagInput.value.trim(); if(!v) return; state.tagsForCurrent = state.tagsForCurrent||new Set(); state.tagsForCurrent.add(v); tagInput.value=''; renderTagsForEditor(); } }
+
+    // --- Search ---
+    function onSearch(){ const q = searchInput.value.trim().toLowerCase(); if(!q){ state.filtered = state.notes.slice().sort(byUpdated); renderNotesList(); return }
+      state.filtered = state.notes.filter(n=> (n.title||'').toLowerCase().includes(q) || (n.content||'').toLowerCase().includes(q) || (n.tags||[]).some(t=>t.toLowerCase().includes(q)) ).sort(byUpdated);
+      renderNotesList(); }
+
+    // --- Export / Import ---
+    function exportNotes(){ const data = {exportedAt:app.now(), notes: state.notes}; const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download = 'hanami-notes-'+(state.token?state.token:'anon')+'.json'; a.click(); URL.revokeObjectURL(url); }
+
+    function importFromFile(e){ const f = e.target.files[0]; if(!f) return; const reader = new FileReader(); reader.onload = ()=>{ try{ const parsed = JSON.parse(reader.result); if(parsed.notes && Array.isArray(parsed.notes)){ state.notes = parsed.notes.concat(state.notes); persist(); state.filtered = state.notes.slice().sort(byUpdated); rebuildTags(); renderNotesList(); toast('Đã nhập'); }else{ alert('File không hợp lệ') } }catch(err){ alert('Lỗi khi đọc file') } }; reader.readAsText(f); }
+
+    // --- Preview ---
+    function preview(){ const md = noteContent.value || ''; const w = window.open('','_blank','width=800,height=600'); const html = `<!doctype html><html><head><meta charset="utf-8"><title>Preview</title></head><body><pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(md)}</pre></body></html>`; w.document.write(html); w.document.close(); }
+
+    // --- Utilities ---
+    function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+    function toast(msg){ const t = document.createElement('div'); t.textContent = msg; t.style.position='fixed'; t.style.right='18px'; t.style.bottom='18px'; t.style.background='rgba(0,0,0,0.7)'; t.style.color='white'; t.style.padding='10px 14px'; t.style.borderRadius='8px'; document.body.appendChild(t); setTimeout(()=>t.remove(),1800); }
+
+    function toggleTheme(){ const cur = document.documentElement.getAttribute('data-theme'); const next = cur==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme', next); localStorage.setItem('theme', next); }
+
+    // --- Clear on first load if empty: create starter note ---
+    window.addEventListener('load', ()=>{
+      init();
+      if(state.notes.length===0) createNote();
+    });
+
+    // expose for parent
+    window.hanamiNotes = {
+      export: exportNotes,
+      importFromObject(o){ if(o && Array.isArray(o.notes)) { state.notes = o.notes.concat(state.notes); persist(); renderNotesList(); } }
+    }
+  </script>
+</body>
+</html>
