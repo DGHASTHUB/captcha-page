@@ -1,0 +1,257 @@
+<!doctype html>
+
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cyberpunk Notes — Ghi chú</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#081018aa; --accent:#ff2d95; --accent2:#29f2ff; --glass:rgba(255,255,255,0.04);
+      --neon-shadow: 0 0 12px rgba(255,45,149,0.18),0 0 40px rgba(41,242,255,0.06);
+      --glass-border: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:radial-gradient(1200px 600px at 10% 10%, rgba(41,242,255,0.04), transparent),
+      radial-gradient(800px 400px at 90% 90%, rgba(255,45,149,0.03), transparent),var(--bg);color:#cfe9ff;font-family:Montserrat,system-ui,Arial}.app{display:grid;grid-template-columns:320px 1fr;gap:18px;padding:28px;min-height:100vh}
+
+/* Sidebar */
+.sidebar{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border-radius:16px;padding:18px;backdrop-filter:blur(6px);box-shadow:var(--neon-shadow)}
+.brand{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.logo{width:46px;height:46px;border-radius:10px;background:conic-gradient(from 90deg, var(--accent), var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#021;box-shadow:0 6px 18px rgba(41,242,255,0.06)}
+h1{font-size:16px;margin:0}
+.controls{display:flex;gap:8px;margin:12px 0}
+button.btn{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:10px;color:inherit;cursor:pointer;font-weight:600}
+button.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#021;border:none}
+.search{margin-top:10px}
+.search input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+.notes-list{margin-top:12px;max-height:60vh;overflow:auto;padding-right:8px}
+.note-item{padding:10px;border-radius:8px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.note-item.active{box-shadow:0 6px 20px rgba(41,242,255,0.06);border-left:4px solid var(--accent)}
+.note-title{font-weight:700}
+.note-meta{font-size:12px;color:rgba(255,255,255,0.55)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:11px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,0.02)}
+
+/* Main editor */
+.editor{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;backdrop-filter:blur(6px);box-shadow:var(--neon-shadow)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.title-input{font-size:20px;background:transparent;border:none;color:inherit;outline:none;font-weight:700}
+.toolbar{display:flex;gap:8px;align-items:center}
+
+.content{display:grid;grid-template-columns:1fr 420px;gap:14px;align-items:start}
+.panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.02);min-height:60vh}
+textarea#editor{width:100%;height:100%;min-height:56vh;background:transparent;border:none;color:inherit;resize:none;outline:none;font-family:JetBrains Mono,monospace;font-size:14px}
+.preview{overflow:auto;height:56vh;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:8px}
+
+.footer{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:rgba(255,255,255,0.6)}
+
+/* small screens */
+@media (max-width:900px){.app{grid-template-columns:1fr;padding:12px}.sidebar{display:none}.content{grid-template-columns:1fr}}
+
+/* neon accents */
+.neon{color:var(--accent);text-shadow:0 0 14px rgba(255,45,149,0.18)}
+
+/* file input hidden */
+input[type=file]{display:none}
+
+/* nice scroll */
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));border-radius:10px}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">CP</div><div><h1>CyberNotes</h1><div style="font-size:12px;color:rgba(255,255,255,0.5)">Ghi chú neon — local only</div></div></div>
+      <div class="controls">
+        <button class="btn primary" id="newBtn">+ Ghi chú mới</button>
+        <button class="btn" id="exportBtn" title="Xuất JSON">Export</button>
+      </div>
+      <div class="search"><input id="searchInput" placeholder="Tìm kiếm... (Ctrl+F)"/></div>
+      <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="sortBtn">Sắp xếp: Mới</button><button class="btn" id="clearBtn">Xóa tất cả</button></div><div class="notes-list" id="notesList"></div>
+  <div style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.45)">Nhấn Ctrl+N tạo ghi chú. Ctrl+S lưu. Có thể xuất/import JSON.</div>
+  <input type="file" id="importFile" accept="application/json" />
+</aside>
+
+<main class="editor">
+  <div class="topbar">
+    <input id="title" class="title-input" placeholder="Tiêu đề..." />
+    <div class="toolbar">
+      <button class="btn" id="pinBtn" title="Ghim/bo ghim">🔒</button>
+      <button class="btn" id="deleteBtn">🗑️ Xóa</button>
+      <button class="btn" id="importBtn">📂 Import</button>
+      <button class="btn" id="exportTxtBtn">📄 Xuất .txt</button>
+      <button class="btn" id="togglePreview">👁️ Xem</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="panel">
+      <textarea id="editor" placeholder="Viết ghi chú... (hỗ trợ markdown cơ bản)"></textarea>
+    </div>
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>Preview</strong><div class="tags" id="tagContainer"></div></div>
+      <div class="preview" id="previewArea"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div id="status">Đã lưu cục bộ — localStorage</div>
+    <div style="display:flex;gap:10px;align-items:center"><div id="lastEdited"></div></div>
+  </div>
+</main>
+
+  </div>  <script>
+    // Data model stored in localStorage
+    const KEY = 'cyberpunk_notes_v1';
+    let notes = JSON.parse(localStorage.getItem(KEY) || '[]');
+    let activeId = null;
+    let sortMode = 'new';
+
+    // DOM
+    const notesList = document.getElementById('notesList');
+    const newBtn = document.getElementById('newBtn');
+    const titleInput = document.getElementById('title');
+    const editor = document.getElementById('editor');
+    const status = document.getElementById('status');
+    const previewArea = document.getElementById('previewArea');
+    const togglePreviewBtn = document.getElementById('togglePreview');
+    const searchInput = document.getElementById('searchInput');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const importFile = document.getElementById('importFile');
+    const exportTxtBtn = document.getElementById('exportTxtBtn');
+    const pinBtn = document.getElementById('pinBtn');
+    const tagContainer = document.getElementById('tagContainer');
+    const sortBtn = document.getElementById('sortBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const lastEdited = document.getElementById('lastEdited');
+
+    // Utils
+    function uid(){return 'n_'+Math.random().toString(36).slice(2,9)}
+    function nowISO(){return new Date().toISOString()}
+    function save(){localStorage.setItem(KEY, JSON.stringify(notes)); status.textContent = 'Đã lưu ' + new Date().toLocaleTimeString(); renderList();}
+    function load(){notes = JSON.parse(localStorage.getItem(KEY) || '[]');}
+
+    // Basic markdown renderer (very small)
+    function renderMarkdown(md){
+      if(!md) return '';
+      // escape html
+      let out = md.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      // headers
+      out = out.replace(/^###### (.*$)/gim,'<h6>$1</h6>');
+      out = out.replace(/^##### (.*$)/gim,'<h5>$1</h5>');
+      out = out.replace(/^#### (.*$)/gim,'<h4>$1</h4>');
+      out = out.replace(/^### (.*$)/gim,'<h3>$1</h3>');
+      out = out.replace(/^## (.*$)/gim,'<h2>$1</h2>');
+      out = out.replace(/^# (.*$)/gim,'<h1>$1</h1>');
+      // bold/italic
+      out = out.replace(/\*\*(.*?)\*\*/gim,'<strong>$1</strong>');
+      out = out.replace(/\*(.*?)\*/gim,'<em>$1</em>');
+      // inline code
+      out = out.replace(/`([^`]+)`/gim,'<code>$1</code>');
+      // links
+      out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/gim,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+      // lists
+      out = out.replace(/^\s*-\s+(.*)/gim,'<li>$1</li>');
+      out = out.replace(/(<li>.*<\/li>)/gim,'<ul>$1</ul>');
+      // paragraphs
+      out = out.replace(/\n\n+/gim,'</p><p>');
+      out = '<p>'+out+'</p>';
+      // simple code block
+      out = out.replace(/```([\s\S]*?)```/gim, function(m,code){return '<pre><code>'+code.replace(/</g,'&lt;')+'</code></pre>'});return out;
+}
+
+// Render notes list
+function renderList(){
+  notesList.innerHTML = '';
+  let arr = [...notes];
+  // search filter
+  const q = searchInput.value.trim().toLowerCase();
+  if(q) arr = arr.filter(n=> (n.title||'').toLowerCase().includes(q) || (n.content||'').toLowerCase().includes(q) || (n.tags||[]).join(' ').toLowerCase().includes(q));
+  // sort
+  if(sortMode==='new') arr.sort((a,b)=> new Date(b.updated) - new Date(a.updated));
+  else if(sortMode==='old') arr.sort((a,b)=> new Date(a.updated) - new Date(b.updated));
+  else if(sortMode==='pinned') arr.sort((a,b)=> (b.pinned?1:0) - (a.pinned?1:0));
+
+  arr.forEach(n=>{
+    const el = document.createElement('div'); el.className='note-item'+(n.id===activeId?' active':'');
+    el.innerHTML = `<div class="note-title">${escapeHtml(n.title||'Không có tiêu đề')}</div><div class="note-meta">${new Date(n.updated).toLocaleString()} • ${n.tags?n.tags.length:0} tag</div>`;
+    el.onclick = ()=>{openNote(n.id)};
+    notesList.appendChild(el);
+  });
+}
+
+function escapeHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function openNote(id){
+  const n = notes.find(x=>x.id===id); if(!n) return;
+  activeId = id; titleInput.value = n.title; editor.value = n.content; renderPreview(); renderTags(n.tags||[]); lastEdited.textContent = 'Cập nhật: '+new Date(n.updated).toLocaleString(); renderList();
+}
+
+function createNote(){
+  const n = {id:uid(), title:'', content:'', created:nowISO(), updated:nowISO(), tags:[], pinned:false};
+  notes.unshift(n); activeId = n.id; save(); openNote(n.id);
+}
+
+function updateActive(){
+  if(!activeId) return;
+  const n = notes.find(x=>x.id===activeId); if(!n) return;
+  n.title = titleInput.value;
+  n.content = editor.value;
+  n.updated = nowISO();
+  // auto-extract tags (simple: words starting with #)
+  const tags = Array.from(new Set((n.content.match(/#(\w+)/g)||[]).map(t=>t.replace('#',''))));
+  n.tags = tags;
+  save(); renderPreview(); renderTags(n.tags||[]);
+}
+
+function renderPreview(){ previewArea.innerHTML = renderMarkdown(editor.value); }
+function renderTags(tags){ tagContainer.innerHTML=''; tags.forEach(t=>{const el=document.createElement('div');el.className='tag';el.textContent='#'+t;tagContainer.appendChild(el)}) }
+
+function deleteActive(){ if(!activeId) return; if(!confirm('Xóa ghi chú này?')) return; notes = notes.filter(n=>n.id!==activeId); activeId = notes[0]?notes[0].id:null; save(); if(activeId) openNote(activeId); else {titleInput.value=''; editor.value=''; previewArea.innerHTML=''; renderTags([])} }
+
+// Quick export/import
+function exportJSON(){ const data = JSON.stringify(notes, null, 2); const blob = new Blob([data],{type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='cybernotes_export_'+(new Date().toISOString().slice(0,10))+'.json'; a.click(); URL.revokeObjectURL(url);}    
+function importJSONFile(file){ const reader = new FileReader(); reader.onload = (e)=>{ try{ const data = JSON.parse(e.target.result); if(!Array.isArray(data)) throw 0; // merge
+    notes = data.concat(notes); save(); alert('Import xong, đã merge.'); }catch(err){alert('File không hợp lệ');}}; reader.readAsText(file);} 
+function exportTxt(){ if(!activeId){alert('Chọn ghi chú để xuất');return} const n = notes.find(x=>x.id===activeId); const content = (n.title?n.title+'\n\n':'') + n.content; const blob = new Blob([content],{type:'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = (n.title||'note') + '.txt'; a.click(); URL.revokeObjectURL(url);} 
+
+// keyboard shortcuts
+document.addEventListener('keydown', (e)=>{
+  if(e.ctrlKey && e.key.toLowerCase()==='s'){ e.preventDefault(); updateActive(); status.textContent = 'Lưu bằng phím tắt — '+ new Date().toLocaleTimeString(); }
+  if(e.ctrlKey && e.key.toLowerCase()==='n'){ e.preventDefault(); createNote(); }
+  if(e.ctrlKey && e.key.toLowerCase()==='f'){ e.preventDefault(); searchInput.focus(); }
+});
+
+// events
+newBtn.onclick = ()=>{ createNote(); titleInput.focus(); }
+editor.addEventListener('input', ()=>{ status.textContent='Chưa lưu...'; renderPreview(); });
+titleInput.addEventListener('input', ()=>{ status.textContent='Chưa lưu...'; });
+// autosave every 1.2s while typing
+let saveTimer = null; ['input','keyup','change'].forEach(ev=>{ [editor,titleInput].forEach(el=>el.addEventListener(ev, ()=>{ clearTimeout(saveTimer); saveTimer = setTimeout(updateActive, 1200); } ))});
+
+togglePreviewBtn.onclick = ()=>{ previewArea.parentElement.style.display = previewArea.parentElement.style.display==='none'? 'block':'block'; renderPreview(); }
+searchInput.addEventListener('input', renderList);
+deleteBtn.onclick = deleteActive;
+exportBtn.onclick = exportJSON;
+importBtn.onclick = ()=> importFile.click();
+importFile.onchange = (e)=>{ if(e.target.files[0]) importJSONFile(e.target.files[0]);}
+exportTxtBtn.onclick = exportTxt;
+pinBtn.onclick = ()=>{ if(!activeId) return; const n = notes.find(x=>x.id===activeId); n.pinned = !n.pinned; n.updated = nowISO(); save(); }
+sortBtn.onclick = ()=>{ if(sortMode==='new') sortMode='old'; else if(sortMode==='old') sortMode='pinned'; else sortMode='new'; sortBtn.textContent = 'Sắp xếp: '+(sortMode==='new'?'Mới':sortMode==='old'?'Cũ':'Ghim'); renderList(); }
+clearBtn.onclick = ()=>{ if(confirm('Xóa toàn bộ ghi chú trong localStorage?')){notes=[];save(); location.reload();}}
+
+// init
+load(); if(notes.length===0){ createNote(); notes[0].title='Chào mừng'; notes[0].content='Đây là ghi chú đầu tiên. Dùng **Ctrl+N** để tạo mới, **Ctrl+S** để lưu.\n\nGắn tag bằng #tagname trong nội dung.'; save(); }
+activeId = notes[0].id; openNote(activeId); renderList();
+
+// small helper: open note on click in list already handled
+
+  </script>
+</body>
+</html>
