@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 LyricsWave</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #050508;
+    --surface: #0d0d14;
+    --card: #12121c;
+    --border: #1e1e2e;
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --accent3: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --glow: rgba(124,58,237,0.4);
+    --glow2: rgba(6,182,212,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background mesh */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,58,237,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(6,182,212,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(245,158,11,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+  }
+
+  /* Upload Zone */
+  .upload-zone {
+    border: 1.5px dashed var(--border);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .upload-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(124,58,237,0.05), rgba(6,182,212,0.05));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .upload-zone:hover::before,
+  .upload-zone.dragover::before { opacity: 1; }
+
+  .upload-zone:hover,
+  .upload-zone.dragover {
+    border-color: var(--accent);
+    box-shadow: 0 0 40px var(--glow);
+    transform: translateY(-2px);
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .upload-zone h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .upload-zone p {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .upload-zone input[type="file"] {
+    display: none;
+  }
+
+  .file-formats {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .file-formats span {
+    background: var(--border);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Main layout when song loaded */
+  .player-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 1.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  .player-layout.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Left panel */
+  .left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  /* Album Art */
+  .album-art {
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    aspect-ratio: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .album-art-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    position: relative;
+  }
+
+  .album-disc {
+    width: 70%;
+    height: 70%;
+    border-radius: 50%;
+    background: 
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent 50%),
+      conic-gradient(from 0deg, #1a1a2e, #2d2d4e, #1a1a2e, #2d2d4e, #1a1a2e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
+  }
+
+  .album-disc::before {
+    content: '';
+    width: 20%;
+    height: 20%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #2a2a3e, #1a1a2e);
+    border: 2px solid var(--border);
+    box-shadow: 0 0 10px rgba(124,58,237,0.3);
+  }
+
+  .album-disc.spinning {
+    animation: spin 4s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Visualizer */
+  .visualizer-container {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .visualizer-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  canvas#visualizer {
+    width: 100%;
+    height: 80px;
+    display: block;
+  }
+
+  /* Song Info */
+  .song-info {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 1.2rem;
+  }
+
+  .song-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .song-artist {
+    color: var(--accent2);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  /* Progress */
+  .progress-bar {
+    position: relative;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0.5rem 0;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.1s linear;
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 8px var(--glow);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .progress-bar:hover .progress-fill::after { opacity: 1; }
+
+  .time-display {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .ctrl-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    padding: 0.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ctrl-btn:hover { color: var(--text); transform: scale(1.1); }
+
+  .play-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    box-shadow: 0 0 20px var(--glow);
+    transition: all 0.2s;
+  }
+
+  .play-btn:hover { transform: scale(1.08); box-shadow: 0 0 30px var(--glow); }
+  .play-btn:active { transform: scale(0.95); }
+
+  /* Volume */
+  .volume-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.8rem;
+  }
+
+  .volume-row span { font-size: 0.95rem; color: var(--muted); }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 6px var(--glow);
+  }
+
+  /* Right panel - Lyrics */
+  .lyrics-panel {
+    background: var(--card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 500px;
+  }
+
+  .lyrics-header {
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+  }
+
+  .lyrics-header h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    color: var(--text);
+  }
+
+  .lyrics-tabs {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .tab-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* Lyrics input */
+  .lyrics-input-area {
+    padding: 1.2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .lyrics-hint {
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: rgba(124,58,237,0.9);
+    line-height: 1.6;
+  }
+
+  .lyrics-hint strong { color: var(--accent); }
+
+  textarea#lyricsInput {
+    flex: 1;
+    min-height: 300px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    padding: 1rem;
+    resize: none;
+    outline: none;
+    line-height: 1.7;
+    transition: border-color 0.2s;
+  }
+
+  textarea#lyricsInput:focus { border-color: var(--accent); }
+
+  textarea#lyricsInput::placeholder { color: var(--muted); }
+
+  .lyrics-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .btn-primary {
+    flex: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px var(--glow);
+  }
+
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); color: var(--text); }
+
+  /* Lyrics Display */
+  .lyrics-display {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    scroll-behavior: smooth;
+  }
+
+  .lyrics-display::-webkit-scrollbar { width: 3px; }
+  .lyrics-display::-webkit-scrollbar-track { background: transparent; }
+  .lyrics-display::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .lyric-line {
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.2rem;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: var(--muted);
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    cursor: pointer;
+    line-height: 1.5;
+  }
+
+  .lyric-line:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+
+  .lyric-line.active {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+    background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(6,182,212,0.1));
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    text-shadow: 0 0 20px rgba(124,58,237,0.5);
+  }
+
+  .lyric-line.past {
+    color: rgba(100,116,139,0.5);
+  }
+
+  .lyric-line .timestamp {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+    margin-right: 0.5rem;
+  }
+
+  .lyric-line:hover .timestamp { opacity: 1; }
+
+  .no-lyrics {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--muted);
+    gap: 0.75rem;
+  }
+
+  .no-lyrics span { font-size: 3rem; }
+  .no-lyrics p { font-family: 'Space Mono', monospace; font-size: 0.8rem; text-align: center; line-height: 1.6; }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 100;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .player-layout { grid-template-columns: 1fr; }
+    .left-panel { order: 2; }
+    .lyrics-panel { order: 1; min-height: 400px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <div class="logo">LyricsWave</div>
+      <div class="tagline">Đồng bộ lời bài hát • Beat Visualizer</div>
+    </div>
+  </header>
+
+  <!-- Upload Zone -->
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="audioFile" accept="audio/*">
+    <div class="upload-icon">🎵</div>
+    <h2>Upload Bài Hát</h2>
+    <p>Kéo thả file nhạc vào đây hoặc click để chọn</p>
+    <div class="file-formats">
+      <span>MP3</span>
+      <span>WAV</span>
+      <span>FLAC</span>
+      <span>OGG</span>
+      <span>M4A</span>
+    </div>
+  </div>
+
+  <!-- Player Layout (hidden until song loaded) -->
+  <div class="player-layout" id="playerLayout">
+    <!-- Left: Player -->
+    <div class="left-panel">
+
+      <!-- Album Art -->
+      <div class="album-art">
+        <div class="album-art-inner">
+          <div class="album-disc" id="albumDisc"></div>
+        </div>
+      </div>
+
+      <!-- Visualizer -->
+      <div class="visualizer-container">
+        <div class="visualizer-label">⚡ Audio Visualizer</div>
+        <canvas id="visualizer"></canvas>
+      </div>
+
+      <!-- Song Info & Controls -->
+      <div class="song-info">
+        <div class="song-title" id="songTitle">—</div>
+        <div class="song-artist" id="songArtist">Unknown Artist</div>
+
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="time-display">
+          <span id="currentTime">0:00</span>
+          <span id="totalTime">0:00</span>
+        </div>
+
+        <div class="controls">
+          <button class="ctrl-btn" id="skipBackBtn" title="Tua lại 10s">⏮</button>
+          <button class="play-btn" id="playBtn">▶</button>
+          <button class="ctrl-btn" id="skipFwdBtn" title="Tua tới 10s">⏭</button>
+        </div>
+
+        <div class="volume-row">
+          <span>🔈</span>
+          <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8">
+          <span>🔊</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Lyrics Panel -->
+    <div class="lyrics-panel">
+      <div class="lyrics-header">
+        <h3>📝 Lời Bài Hát</h3>
+        <div class="lyrics-tabs">
+          <button class="tab-btn active" id="tabEdit" onclick="switchTab('edit')">Nhập Lyrics</button>
+          <button class="tab-btn" id="tabView" onclick="switchTab('view')">Xem Lyrics</button>
+        </div>
+      </div>
+
+      <!-- Edit Tab -->
+      <div class="lyrics-input-area" id="editTab">
+        <div class="lyrics-hint">
+          <strong>Định dạng LRC (có timestamp):</strong><br>
+          [00:12.50] Dòng lời bài hát đầu tiên<br>
+          [00:16.20] Dòng lời bài hát thứ hai<br><br>
+          <strong>Hoặc nhập lyrics thường</strong> (không cần timestamp — hệ thống sẽ tự chia đều)
+        </div>
+        <textarea id="lyricsInput" placeholder="Dán lời bài hát vào đây...&#10;&#10;Ví dụ định dạng LRC:&#10;[00:05.00] Khi anh nhìn vào mắt em&#10;[00:10.50] Anh thấy cả bầu trời xanh&#10;&#10;Hoặc nhập lời thường không cần timestamp"></textarea>
+        <div class="lyrics-actions">
+          <button class="btn-primary" onclick="parseLyrics()">✨ Áp Dụng Lyrics</button>
+          <button class="btn-secondary" onclick="clearLyrics()">🗑 Xoá</button>
+        </div>
+      </div>
+
+      <!-- View Tab -->
+      <div class="lyrics-display" id="viewTab" style="display:none">
+        <div class="no-lyrics" id="noLyrics">
+          <span>🎤</span>
+          <p>Nhập lyrics ở tab "Nhập Lyrics"<br>rồi nhấn "Áp Dụng Lyrics"</p>
+        </div>
+        <div id="lyricsContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<audio id="audioEl" crossorigin="anonymous"></audio>
+
+<script>
+const audioEl = document.getElementById('audioEl');
+const uploadZone = document.getElementById('uploadZone');
+const audioFile = document.getElementById('audioFile');
+const playerLayout = document.getElementById('playerLayout');
+const songTitle = document.getElementById('songTitle');
+const songArtist = document.getElementById('songArtist');
+const playBtn = document.getElementById('playBtn');
+const progressBar = document.getElementById('progressBar');
+const progressFill = document.getElementById('progressFill');
+const currentTimeEl = document.getElementById('currentTime');
+const totalTimeEl = document.getElementById('totalTime');
+const volumeSlider = document.getElementById('volumeSlider');
+const albumDisc = document.getElementById('albumDisc');
+const visualizerCanvas = document.getElementById('visualizer');
+const ctx = visualizerCanvas.getContext('2d');
+const lyricsContainer = document.getElementById('lyricsContainer');
+const noLyrics = document.getElementById('noLyrics');
+
+let audioCtx, analyser, source, animId;
+let lyricsData = []; // [{time, text}]
+let currentLineIndex = -1;
+let isPlaying = false;
+
+// Setup canvas
+function setupCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const w = visualizerCanvas.offsetWidth;
+  const h = 80;
+  visualizerCanvas.width = w * dpr;
+  visualizerCanvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+}
+
+// Init Audio Context
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    source = audioCtx.createMediaElementSource(audioEl);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+  }
+}
+
+// Drag & Drop
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('audio/')) loadAudio(file);
+});
+
+uploadZone.addEventListener('click', () => audioFile.click());
+audioFile.addEventListener('change', e => {
+  if (e.target.files[0]) loadAudio(e.target.files[0]);
+});
+
+function loadAudio(file) {
+  const url = URL.createObjectURL(file);
+  audioEl.src = url;
+  audioEl.load();
+
+  // Parse filename
+  let name = file.name.replace(/\.[^.]+$/, '');
+  let artist = 'Unknown Artist';
+  if (name.includes(' - ')) {
+    const parts = name.split(' - ');
+    artist = parts[0].trim();
+    name = parts.slice(1).join(' - ').trim();
+  }
+
+  songTitle.textContent = name;
+  songArtist.textContent = artist;
+
+  playerLayout.classList.add('visible');
+  showToast('🎵 Đã tải bài hát!');
+
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  setupCanvas();
+  drawVisualizer();
+}
+
+// Play/Pause
+playBtn.addEventListener('click', () => {
+  if (!audioEl.src) return;
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+
+  if (isPlaying) {
+    audioEl.pause();
+    playBtn.textContent = '▶';
+    albumDisc.classList.remove('spinning');
+    isPlaying = false;
+  } else {
+    audioEl.play();
+    playBtn.textContent = '⏸';
+    albumDisc.classList.add('spinning');
+    isPlaying = true;
+  }
+});
+
+audioEl.addEventListener('ended', () => {
+  playBtn.textContent = '▶';
+  albumDisc.classList.remove('spinning');
+  isPlaying = false;
+  progressFill.style.width = '0%';
+  currentLineIndex = -1;
+});
+
+// Skip buttons
+document.getElementById('skipBackBtn').addEventListener('click', () => { audioEl.currentTime = Math.max(0, audioEl.currentTime - 10); });
+document.getElementById('skipFwdBtn').addEventListener('click', () => { audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 10); });
+
+// Progress
+audioEl.addEventListener('timeupdate', () => {
+  if (!audioEl.duration) return;
+  const pct = (audioEl.currentTime / audioEl.duration) * 100;
+  progressFill.style.width = pct + '%';
+  currentTimeEl.textContent = formatTime(audioEl.currentTime);
+  syncLyrics(audioEl.currentTime);
+});
+
+audioEl.addEventListener('loadedmetadata', () => {
+  totalTimeEl.textContent = formatTime(audioEl.duration);
+});
+
+progressBar.addEventListener('click', e => {
+  if (!audioEl.duration) return;
+  const rect = progressBar.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  audioEl.currentTime = pct * audioEl.duration;
+});
+
+// Volume
+volumeSlider.addEventListener('input', e => { audioEl.volume = e.target.value; });
+audioEl.volume = 0.8;
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
+// Visualizer
+function drawVisualizer() {
+  if (!analyser) { animId = requestAnimationFrame(drawVisualizer); return; }
+
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+  analyser.getByteFrequencyData(dataArray);
+
+  const w = visualizerCanvas.offsetWidth;
+  const h = 80;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const barCount = 60;
+  const barWidth = w / barCount - 1.5;
+  const step = Math.floor(bufferLength / barCount);
+
+  for (let i = 0; i < barCount; i++) {
+    const val = dataArray[i * step] / 255;
+    const barH = val * h * 0.9;
+
+    const hue = 260 + i * 2.5;
+    const sat = 70 + val * 30;
+    const lum = 50 + val * 20;
+
+    ctx.fillStyle = isPlaying
+      ? `hsla(${hue},${sat}%,${lum}%,${0.5 + val * 0.5})`
+      : `hsla(240,20%,40%,0.3)`;
+
+    const x = i * (barWidth + 1.5);
+    ctx.beginPath();
+    ctx.roundRect(x, h - barH, barWidth, barH, [2, 2, 0, 0]);
+    ctx.fill();
+  }
+
+  // Glow layer
+  if (isPlaying) {
+    const avg = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
+    if (avg > 80) {
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = `rgba(124,58,237,${avg/255})`;
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  animId = requestAnimationFrame(drawVisualizer);
+}
+
+// Tab switching
+function switchTab(tab) {
+  const editTab = document.getElementById('editTab');
+  const viewTab = document.getElementById('viewTab');
+  const tabEdit = document.getElementById('tabEdit');
+  const tabView = document.getElementById('tabView');
+
+  if (tab === 'edit') {
+    editTab.style.display = 'flex';
+    viewTab.style.display = 'none';
+    tabEdit.classList.add('active');
+    tabView.classList.remove('active');
+  } else {
+    editTab.style.display = 'none';
+    viewTab.style.display = 'block';
+    tabEdit.classList.remove('active');
+    tabView.classList.add('active');
+    if (lyricsData.length > 0) scrollToActive();
+  }
+}
+
+// Parse Lyrics
+function parseLyrics() {
+  const raw = document.getElementById('lyricsInput').value.trim();
+  if (!raw) { showToast('⚠️ Vui lòng nhập lời bài hát!'); return; }
+
+  lyricsData = [];
+  const lines = raw.split('\n').filter(l => l.trim());
+
+  // Detect LRC format
+  const lrcRegex = /^\[(\d+):(\d+\.?\d*)\]\s*(.*)$/;
+  const hasTimestamps = lines.some(l => lrcRegex.test(l.trim()));
+
+  if (hasTimestamps) {
+    // Parse LRC
+    lines.forEach(line => {
+      line = line.trim();
+      const match = line.match(lrcRegex);
+      if (match) {
+        const mins = parseInt(match[1]);
+        const secs = parseFloat(match[2]);
+        const text = match[3].trim();
+        if (text) lyricsData.push({ time: mins * 60 + secs, text });
+      }
+    });
+    lyricsData.sort((a, b) => a.time - b.time);
+    showToast('✅ Đã parse ' + lyricsData.length + ' dòng lyrics LRC!');
+  } else {
+    // Auto-distribute evenly across song duration
+    const textLines = lines.filter(l => l.trim());
+    const duration = audioEl.duration || 180;
+    const interval = duration / (textLines.length + 1);
+    textLines.forEach((text, i) => {
+      lyricsData.push({ time: interval * (i + 1) - interval * 0.8, text: text.trim() });
+    });
+    showToast('✅ Đã tự phân bổ ' + lyricsData.length + ' dòng lyrics!');
+  }
+
+  renderLyricsView();
+  switchTab('view');
+}
+
+function clearLyrics() {
+  document.getElementById('lyricsInput').value = '';
+  lyricsData = [];
+  renderLyricsView();
+  showToast('🗑 Đã xoá lyrics');
+}
+
+function renderLyricsView() {
+  lyricsContainer.innerHTML = '';
+  if (lyricsData.length === 0) {
+    noLyrics.style.display = 'flex';
+    return;
+  }
+  noLyrics.style.display = 'none';
+
+  lyricsData.forEach((line, i) => {
+    const div = document.createElement('div');
+    div.className = 'lyric-line';
+    div.dataset.index = i;
+
+    const ts = document.createElement('span');
+    ts.className = 'timestamp';
+    ts.textContent = formatTime(line.time);
+
+    div.appendChild(ts);
+    div.appendChild(document.createTextNode(line.text));
+
+    // Click to seek
+    div.addEventListener('click', () => {
+      audioEl.currentTime = line.time;
+      if (!isPlaying) {
+        audioEl.play();
+        playBtn.textContent = '⏸';
+        albumDisc.classList.add('spinning');
+        isPlaying = true;
+      }
+    });
+
+    lyricsContainer.appendChild(div);
+  });
+}
+
+function syncLyrics(t) {
+  if (lyricsData.length === 0) return;
+
+  let activeIdx = -1;
+  for (let i = 0; i < lyricsData.length; i++) {
+    if (lyricsData[i].time <= t) activeIdx = i;
+    else break;
+  }
+
+  if (activeIdx === currentLineIndex) return;
+  currentLineIndex = activeIdx;
+
+  const lines = lyricsContainer.querySelectorAll('.lyric-line');
+  lines.forEach((line, i) => {
+    line.classList.remove('active', 'past');
+    if (i < activeIdx) line.classList.add('past');
+    else if (i === activeIdx) line.classList.add('active');
+  });
+
+  // Auto scroll
+  if (activeIdx >= 0 && lines[activeIdx]) {
+    const viewTab = document.getElementById('viewTab');
+    const lineEl = lines[activeIdx];
+    const lineTop = lineEl.offsetTop;
+    const lineH = lineEl.offsetHeight;
+    const containerH = viewTab.offsetHeight;
+    viewTab.scrollTo({ top: lineTop - containerH / 2 + lineH / 2, behavior: 'smooth' });
+  }
+}
+
+function scrollToActive() {
+  if (currentLineIndex >= 0) {
+    const lines = lyricsContainer.querySelectorAll('.lyric-line');
+    if (lines[currentLineIndex]) {
+      const viewTab = document.getElementById('viewTab');
+      const lineEl = lines[currentLineIndex];
+      viewTab.scrollTo({ top: lineEl.offsetTop - viewTab.offsetHeight / 2, behavior: 'smooth' });
+    }
+  }
+}
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Init canvas on load
+window.addEventListener('resize', setupCanvas);
+setupCanvas();
+drawVisualizer();
+</script>
+</body>
+</html>
